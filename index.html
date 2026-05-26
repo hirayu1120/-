@@ -8,52 +8,33 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-  <!-- SEO -->
-
   <title>
-    ケラ研究所｜ケラの生態・形態・巣穴・行動を研究するサイト
+    ケラ研究所｜オケラの生態・巣穴・鳴き声・行動を研究するサイト
   </title>
 
   <meta name="description"
-        content="ケラ研究所による、ケラの生態、形態、巣穴、行動、地中適応を紹介する研究サイト。研究論文をもとに、一般向けにわかりやすく解説しています。">
+        content="ケラ研究所は、オケラとも呼ばれる地中性昆虫ケラの生態、巣穴、鳴き声、行動、形態、翅、飼育方法を研究論文をもとにわかりやすく解説する研究サイトです。">
 
   <meta name="keywords"
-        content="ケラ,オケラ,Mole Cricket,昆虫,昆虫研究,地中昆虫,行動学,生態学,ケラ 形態,ケラ 翅,ケラ 巣穴,Gryllotalpa orientalis">
+        content="ケラ,オケラ,ケラ 生態,ケラ 巣穴,ケラ 鳴き声,ケラ 行動,ケラ 飼育,Mole Cricket,Gryllotalpa orientalis">
 
   <meta name="author"
         content="ケラ研究所">
 
-  <!-- Site Name -->
-
-  <meta name="application-name"
-        content="ケラ研究所">
-
-  <meta property="og:site_name"
-        content="ケラ研究所">
-
-  <!-- OGP -->
-
   <meta property="og:title"
-        content="ケラ研究所｜ケラの生態・形態・巣穴・行動を研究するサイト">
+        content="ケラ研究所｜オケラの生態・巣穴・鳴き声・行動">
 
   <meta property="og:description"
-        content="地中でくらす不思議な昆虫・ケラの生態、形態、巣穴、行動、進化を研究論文とともに紹介するサイト。">
+        content="地中でくらす不思議な昆虫・ケラの生態、行動、巣穴、形態、地中適応を研究論文とともに紹介する研究サイト。">
 
   <meta property="og:type"
         content="website">
 
   <meta property="og:url"
-        content="https://hirayu1120.github.io/mollcricket/">
+        content="https://hirayu1120.github.io/-/">
 
   <meta property="og:image"
-        content="https://hirayu1120.github.io/mollcricket/kera.jpg">
-
-  <!-- canonical -->
-
-  <link rel="canonical"
-        href="https://hirayu1120.github.io/mollcricket/">
-
-  <!-- Twitter -->
+        content="https://hirayu1120.github.io/-/kera.jpg">
 
   <meta name="twitter:card"
         content="summary_large_image">
@@ -62,9 +43,10 @@
         content="ケラ研究所">
 
   <meta name="twitter:description"
-        content="ケラの生態・形態・巣穴・行動を紹介する研究サイト">
+        content="ケラの生態・巣穴・鳴き声・行動を紹介する研究サイト">
 
-  <!-- favicon -->
+  <link rel="canonical"
+        href="https://hirayu1120.github.io/-/">
 
   <link rel="icon"
         type="image/png"
@@ -73,14 +55,36 @@
   <link rel="apple-touch-icon"
         href="favicon.png">
 
-  <!-- CSS -->
-
   <link rel="stylesheet"
         href="style.css">
 
 </head>
 
 <body>
+
+<!-- ステータス -->
+
+<div id="game-status">
+
+  ケラをタップ：
+  増える ／ 王様ケラ誕生後、
+  大群でミイデラゴミムシに挑む
+
+</div>
+
+<!-- 操作ボタン -->
+
+<div id="control-panel">
+
+  <button id="add-beetle-button">
+    ミイデラゴミムシを増やす
+  </button>
+
+  <button id="insecticide-button">
+    殺虫剤
+  </button>
+
+</div>
 
 <header>
 
@@ -96,70 +100,110 @@
     ケラ研究所
   </h1>
 
-  <p>
-    地中でくらす不思議な昆虫・ケラの生態、形態、巣穴、行動を探る
+  <p class="hero-description">
+
+    地中でくらす不思議な昆虫・
+    ケラ（オケラ）の
+    生態、巣穴、鳴き声、行動、
+    形態、地中適応を探る研究サイト
+
   </p>
 
 </header>
 
 <main>
 
-  <section>
+  <section class="field-section">
 
     <h2>
-      研究ページ一覧
+      研究ページ
     </h2>
 
-    <p class="section-description">
-      ケラ研究所では、研究論文をもとに、ケラの地下生活、形態、行動、生態について一般向けにまとめています。
-    </p>
+    <div class="research-dial">
 
-    <div class="menu">
+      <a href="behavior.html"
+         class="orbit orbit1">
 
-      <a href="behavior.html" class="card">
-        ケラの行動
+         ケラの行動
+
       </a>
 
-      <a href="morphology.html" class="card">
-        ケラの形態と翅
+      <a href="morphology.html"
+         class="orbit orbit2">
+
+         形態と翅
+
       </a>
 
-      <a href="burrow.html" class="card">
-        ケラの巣穴
+      <a href="burrow.html"
+         class="orbit orbit3">
+
+         ケラの巣穴
+
       </a>
 
-      <a href="world.html" class="card">
-        世界のケラ
+      <a href="world.html"
+         class="orbit orbit4">
+
+         世界のケラ
+
       </a>
 
-      <a href="parasite.html" class="card">
-        ケラと寄生関係
+      <a href="parasite.html"
+         class="orbit orbit5">
+
+         寄生関係
+
       </a>
 
-      <a href="breeding.html" class="card">
-        ケラの飼育
+      <a href="breeding.html"
+         class="orbit orbit6">
+
+         ケラの飼育
+
       </a>
 
     </div>
 
   </section>
 
-  <section>
+  <section class="dark-theme-section">
 
     <h2>
       ケラ研究所について
     </h2>
 
     <p>
-      ケラ研究所は、地中性昆虫であるケラをテーマにした研究・解説サイトです。
+
+      ケラ研究所は、
+      地中性昆虫である
+      ケラ（オケラ）をテーマにした
+      研究・解説サイトです。
+
     </p>
 
     <p>
-      ケラの巣穴、翅型、鳴き声、地下生活への適応、寄生関係、行動、生態などについて、研究論文をもとに整理し、一般向けにわかりやすく紹介しています。
+
+      ケラの巣穴、翅型、鳴き声、
+      地下生活への適応、
+      行動、生態、寄生関係、
+      飼育方法などについて、
+      研究論文をもとに整理し、
+      一般向けに
+      わかりやすく紹介しています。
+
     </p>
 
     <p>
-      「ケラとはどんな昆虫なのか」を、体のつくり、地下生活、繁殖、行動、生態、進化の視点からまとめています。
+
+      ケラは、
+      前脚を使って土を掘り進み、
+      地中に複雑な巣穴を作る昆虫です。
+
+      夜には地表活動を行い、
+      鳴き声や振動を利用した
+      行動も知られています。
+
     </p>
 
   </section>
@@ -168,10 +212,611 @@
 
 <footer>
 
-  <p>&copy; 2026 ケラ研究所</p>
+  <p>
+    &copy; 2026 ケラ研究所
+  </p>
 
 </footer>
 
-</body>
+<script>
 
+let keras = [];
+
+let beetles = [];
+
+let kingBorn = false;
+
+const MAX_KERA = 90;
+
+/* ボタン */
+
+const addBeetleButton =
+document.getElementById(
+  "add-beetle-button"
+);
+
+const insecticideButton =
+document.getElementById(
+  "insecticide-button"
+);
+
+/* ランダム */
+
+function rand(max){
+
+  return Math.random() * max;
+}
+
+/* 距離 */
+
+function distance(a,b){
+
+  const dx =
+  a.x - b.x;
+
+  const dy =
+  a.y - b.y;
+
+  return Math.sqrt(
+    dx * dx + dy * dy
+  );
+}
+
+/* 画面制限 */
+
+function limit(obj){
+
+  obj.x =
+  Math.max(
+    0,
+    Math.min(
+      window.innerWidth - obj.size,
+      obj.x
+    )
+  );
+
+  obj.y =
+  Math.max(
+    0,
+    Math.min(
+      window.innerHeight - obj.size,
+      obj.y
+    )
+  );
+}
+
+/* ケラ生成 */
+
+function createKera(isKing = false){
+
+  if(
+    keras.length >= MAX_KERA
+  ) return;
+
+  const img =
+  document.createElement("img");
+
+  img.src =
+  isKing
+  ? "kera_king.png"
+  : "kera1.png";
+
+  img.className =
+  isKing
+  ? "field-kera king-kera"
+  : "field-kera";
+
+  const kera = {
+
+    el: img,
+
+    x:
+    rand(window.innerWidth - 80),
+
+    y:
+    rand(window.innerHeight - 80),
+
+    size:
+    isKing ? 95 : 55,
+
+    king:isKing
+  };
+
+  img.style.left =
+  kera.x + "px";
+
+  img.style.top =
+  kera.y + "px";
+
+  /* タップ増殖 */
+
+  img.addEventListener(
+    "click",
+    function(event){
+
+      event.stopPropagation();
+
+      if(
+        keras.length >= 12
+        && !kingBorn
+      ){
+
+        kingBorn = true;
+
+        createKera(true);
+      }
+
+      else{
+
+        createKera(false);
+
+        createKera(false);
+      }
+
+      updateStatus();
+    }
+  );
+
+  document.body.appendChild(img);
+
+  keras.push(kera);
+
+  updateStatus();
+}
+
+/* ミイデラゴミムシ */
+
+function createBeetle(){
+
+  const img =
+  document.createElement("img");
+
+  img.src =
+  "miidera.png";
+
+  img.className =
+  "field-beetle";
+
+  const beetle = {
+
+    el: img,
+
+    x:
+    rand(window.innerWidth - 90),
+
+    y:
+    rand(window.innerHeight - 90),
+
+    size:80,
+
+    alive:true
+  };
+
+  img.style.left =
+  beetle.x + "px";
+
+  img.style.top =
+  beetle.y + "px";
+
+  img.addEventListener(
+    "click",
+    function(event){
+
+      event.stopPropagation();
+
+      emitGas(beetle);
+    }
+  );
+
+  document.body.appendChild(img);
+
+  beetles.push(beetle);
+
+  updateStatus();
+}
+
+/* ガス */
+
+function emitGas(beetle){
+
+  if(!beetle.alive) return;
+
+  const gas =
+  document.createElement("div");
+
+  gas.className =
+  "gas-cloud";
+
+  gas.style.left =
+  beetle.x - 45 + "px";
+
+  gas.style.top =
+  beetle.y - 45 + "px";
+
+  document.body.appendChild(gas);
+
+  keras =
+  keras.filter(function(kera){
+
+    const d =
+    distance(kera,beetle);
+
+    if(
+      d < 120
+      && !kera.king
+    ){
+
+      kera.el.remove();
+
+      return false;
+    }
+
+    return true;
+  });
+
+  setTimeout(function(){
+
+    gas.remove();
+
+  },700);
+
+  updateStatus();
+}
+
+/* 撃退 */
+
+function removeBeetle(beetle){
+
+  beetle.alive = false;
+
+  beetle.el.classList.add(
+    "defeated"
+  );
+
+  setTimeout(function(){
+
+    beetle.el.remove();
+
+    beetles =
+    beetles.filter(
+      b => b !== beetle
+    );
+
+    updateStatus();
+
+  },500);
+}
+
+/* ケラ移動 */
+
+function moveKeras(){
+
+  keras.forEach(function(kera){
+
+    if(beetles.length === 0){
+
+      kera.x +=
+      (Math.random() - 0.5)
+      * 28;
+
+      kera.y +=
+      (Math.random() - 0.5)
+      * 28;
+
+      limit(kera);
+
+      kera.el.style.left =
+      kera.x + "px";
+
+      kera.el.style.top =
+      kera.y + "px";
+
+      return;
+    }
+
+    let beetle =
+    beetles[0];
+
+    beetles.forEach(function(b){
+
+      if(
+        distance(kera,b)
+        <
+        distance(kera,beetle)
+      ){
+
+        beetle = b;
+      }
+    });
+
+    const d =
+    distance(kera,beetle);
+
+    /* 大群で反撃 */
+
+    if(
+      kingBorn
+      && keras.length >= 15
+    ){
+
+      kera.x +=
+      (beetle.x - kera.x)
+      * 0.04;
+
+      kera.y +=
+      (beetle.y - kera.y)
+      * 0.04;
+    }
+
+    /* 普通は逃げる */
+
+    else if(d < 180){
+
+      kera.x +=
+      (kera.x - beetle.x)
+      * 0.06;
+
+      kera.y +=
+      (kera.y - beetle.y)
+      * 0.06;
+    }
+
+    /* ランダム */
+
+    else{
+
+      kera.x +=
+      (Math.random() - 0.5)
+      * 26;
+
+      kera.y +=
+      (Math.random() - 0.5)
+      * 26;
+    }
+
+    limit(kera);
+
+    kera.el.style.left =
+    kera.x + "px";
+
+    kera.el.style.top =
+    kera.y + "px";
+  });
+}
+
+/* ミイデラ移動 */
+
+function moveBeetles(){
+
+  beetles.forEach(function(beetle){
+
+    if(
+      !beetle.alive
+      || keras.length === 0
+    ) return;
+
+    const nearbyKeras =
+    keras.filter(
+      kera =>
+      distance(kera,beetle)
+      < 200
+    );
+
+    /* 大群から逃走 */
+
+    if(
+      nearbyKeras.length >= 8
+    ){
+
+      let centerX = 0;
+
+      let centerY = 0;
+
+      nearbyKeras.forEach(function(kera){
+
+        centerX += kera.x;
+
+        centerY += kera.y;
+      });
+
+      centerX /=
+      nearbyKeras.length;
+
+      centerY /=
+      nearbyKeras.length;
+
+      beetle.x +=
+      (beetle.x - centerX)
+      * 0.12;
+
+      beetle.y +=
+      (beetle.y - centerY)
+      * 0.12;
+
+      /* 囲まれて撃退 */
+
+      if(
+        nearbyKeras.length >= 14
+      ){
+
+        removeBeetle(beetle);
+
+        return;
+      }
+    }
+
+    else{
+
+      let target =
+      keras[0];
+
+      keras.forEach(function(kera){
+
+        if(
+          !kera.king
+          &&
+          distance(kera,beetle)
+          <
+          distance(target,beetle)
+        ){
+
+          target = kera;
+        }
+      });
+
+      /* 高速追跡 */
+
+      beetle.x +=
+      (target.x - beetle.x)
+      * 0.095;
+
+      beetle.y +=
+      (target.y - beetle.y)
+      * 0.095;
+
+      /* 捕食 */
+
+      if(
+        distance(target,beetle)
+        < 65
+        && !target.king
+      ){
+
+        target.el.remove();
+
+        keras =
+        keras.filter(
+          k => k !== target
+        );
+
+        emitGas(beetle);
+      }
+    }
+
+    limit(beetle);
+
+    beetle.el.style.left =
+    beetle.x + "px";
+
+    beetle.el.style.top =
+    beetle.y + "px";
+  });
+}
+
+/* ステータス */
+
+function updateStatus(){
+
+  const status =
+  document.getElementById(
+    "game-status"
+  );
+
+  if(beetles.length === 0){
+
+    status.textContent =
+    "ケラの大群がミイデラゴミムシを撃退しました。";
+  }
+
+  else if(kingBorn){
+
+    status.textContent =
+    "王様ケラ誕生。ケラの群れが反撃を始めています。";
+  }
+
+  else{
+
+    status.textContent =
+    "ケラをタップすると増えます。12匹以上で王様ケラが生まれます。";
+  }
+}
+
+/* 更新 */
+
+function simulationLoop(){
+
+  moveKeras();
+
+  moveBeetles();
+}
+
+/* 背景クリック */
+
+document.body.addEventListener(
+  "click",
+  function(){
+
+    createKera(false);
+  }
+);
+
+/* ミイデラ追加ボタン */
+
+addBeetleButton.addEventListener(
+  "click",
+  function(event){
+
+    event.stopPropagation();
+
+    createBeetle();
+
+    updateStatus();
+  }
+);
+
+/* 殺虫剤 */
+
+insecticideButton.addEventListener(
+  "click",
+  function(event){
+
+    event.stopPropagation();
+
+    keras.forEach(function(kera){
+
+      kera.el.remove();
+    });
+
+    beetles.forEach(function(beetle){
+
+      beetle.el.remove();
+    });
+
+    document
+    .querySelectorAll(".gas-cloud")
+    .forEach(function(gas){
+
+      gas.remove();
+    });
+
+    keras = [];
+
+    beetles = [];
+
+    kingBorn = false;
+
+    updateStatus();
+  }
+);
+
+/* 初期生成 */
+
+createKera();
+
+createKera();
+
+createKera();
+
+createBeetle();
+
+/* ループ */
+
+setInterval(
+  simulationLoop,
+  180
+);
+
+</script>
+
+</body>
 </html>

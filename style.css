@@ -1,10 +1,9 @@
-```css
 body{
 
     background-image:
     linear-gradient(
-    rgba(0,0,0,0.7),
-    rgba(0,0,0,0.7)
+    rgba(0,0,0,0.72),
+    rgba(0,0,0,0.72)
     ),
     url("kera.jpg");
 
@@ -20,12 +19,129 @@ body{
 
     margin:0;
 
+    overflow-x:hidden;
+
     text-align:center;
 }
 
-/* header */
+/* =========================
+   ステータス
+========================= */
+
+#game-status{
+
+    position:fixed;
+
+    left:18px;
+
+    bottom:18px;
+
+    transform:none;
+
+    max-width:420px;
+
+    text-align:left;
+
+    z-index:100;
+
+    background:
+    rgba(10,14,20,0.82);
+
+    color:#eaf4ff;
+
+    padding:10px 18px;
+
+    border-radius:20px;
+
+    font-size:14px;
+
+    backdrop-filter:blur(8px);
+
+    border:
+    1px solid rgba(255,255,255,0.12);
+
+    box-shadow:
+    0 0 20px rgba(0,0,0,0.3);
+}
+
+/* =========================
+   操作ボタン
+========================= */
+
+#control-panel{
+
+    position:fixed;
+
+    right:18px;
+
+    bottom:18px;
+
+    z-index:120;
+
+    display:flex;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+}
+
+#control-panel button{
+
+    background:
+    rgba(10,14,20,0.86);
+
+    color:#eaf4ff;
+
+    border:
+    1px solid rgba(255,255,255,0.15);
+
+    border-radius:18px;
+
+    padding:10px 14px;
+
+    cursor:pointer;
+
+    backdrop-filter:blur(8px);
+
+    font-size:13px;
+
+    transition:0.25s;
+
+    box-shadow:
+    0 0 12px rgba(0,0,0,0.25);
+}
+
+#control-panel button:hover{
+
+    background:
+    rgba(35,45,65,0.95);
+
+    transform:
+    scale(1.05);
+}
+
+#insecticide-button{
+
+    color:#ffdede;
+
+    border:
+    1px solid rgba(255,120,120,0.25);
+}
+
+#add-beetle-button{
+
+    color:#d8f1ff;
+}
+
+/* =========================
+   header
+========================= */
 
 header{
+
+    position:relative;
+
+    z-index:5;
 
     padding-bottom:40px;
 }
@@ -41,15 +157,35 @@ header{
     object-fit:cover;
 
     display:block;
+
+    opacity:0.92;
+}
+
+/* サイト名 */
+
+.site-name{
+
+    color:#9fd0ff;
+
+    letter-spacing:0.3em;
+
+    margin-top:30px;
+
+    font-size:14px;
 }
 
 /* タイトル */
 
 h1{
 
-    font-size:50px;
+    font-size:52px;
 
     margin-top:30px;
+
+    color:#dcecff;
+
+    text-shadow:
+    0 0 15px rgba(159,208,255,0.3);
 }
 
 /* 本文 */
@@ -57,28 +193,291 @@ h1{
 p{
 
     font-size:20px;
+
+    line-height:1.9;
 }
 
-/* トップメニュー */
+.hero-description{
 
-.menu{
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(auto-fit,minmax(250px,1fr));
-
-    gap:20px;
-
-    max-width:1100px;
+    max-width:900px;
 
     margin:auto;
 
-    padding:20px;
+    padding:0 20px;
 }
 
 /* =========================
-   共通ダーク研究ページ
+   地中フィールド
+========================= */
+
+.field-section{
+
+    position:relative;
+
+    z-index:5;
+
+    max-width:1100px;
+
+    margin:60px auto;
+
+    padding:35px 20px;
+
+    background:
+    rgba(10,14,20,0.72);
+
+    border-radius:30px;
+
+    backdrop-filter:blur(10px);
+
+    box-shadow:
+    0 0 40px rgba(0,0,0,0.3);
+}
+
+.field-section h2{
+
+    color:#9fd0ff;
+
+    font-size:38px;
+}
+
+/* =========================
+   時計風研究ナビ
+========================= */
+
+.research-dial{
+
+    position:relative;
+
+    width:560px;
+
+    height:560px;
+
+    margin:
+    70px 0 70px 40px;
+
+    border-radius:50%;
+}
+
+.research-dial::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:55px;
+
+    border-radius:50%;
+
+    border:
+    1px dashed rgba(159,208,255,0.28);
+
+    box-shadow:
+    0 0 25px rgba(120,180,255,0.12);
+}
+
+.orbit{
+
+    position:absolute;
+
+    width:125px;
+
+    height:125px;
+
+    border-radius:50%;
+
+    background:
+    rgba(20,25,35,0.88);
+
+    color:white;
+
+    text-decoration:none;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    line-height:1.5;
+
+    font-size:18px;
+
+    transition:0.3s;
+
+    backdrop-filter:blur(6px);
+
+    border:
+    1px solid rgba(255,255,255,0.08);
+
+    z-index:6;
+}
+
+.orbit:hover{
+
+    background:
+    rgba(35,45,65,0.96);
+
+    transform:
+    scale(1.08);
+
+    box-shadow:
+    0 0 18px rgba(120,180,255,0.3);
+}
+
+/* 配置 */
+
+.orbit1{
+
+    top:0;
+
+    left:217px;
+}
+
+.orbit2{
+
+    top:100px;
+
+    right:20px;
+}
+
+.orbit3{
+
+    bottom:100px;
+
+    right:20px;
+}
+
+.orbit4{
+
+    bottom:0;
+
+    left:217px;
+}
+
+.orbit5{
+
+    bottom:100px;
+
+    left:20px;
+}
+
+.orbit6{
+
+    top:100px;
+
+    left:20px;
+}
+
+/* =========================
+   ケラ・ミイデラゴミムシ
+========================= */
+
+.field-kera,
+.field-beetle{
+
+    position:fixed;
+
+    object-fit:contain;
+
+    user-select:none;
+
+    cursor:pointer;
+
+    transition:0.18s linear;
+
+    z-index:30;
+}
+
+/* ケラ */
+
+.field-kera{
+
+    width:55px;
+
+    height:55px;
+
+    animation:
+    wiggle 0.45s infinite alternate;
+
+    filter:
+    drop-shadow(
+    0 0 6px rgba(159,208,255,0.65)
+    );
+}
+
+/* 王様ケラ */
+
+.king-kera{
+
+    width:95px;
+
+    height:95px;
+
+    z-index:35;
+
+    filter:
+    drop-shadow(
+    0 0 18px gold
+    );
+}
+
+/* ミイデラゴミムシ */
+
+.field-beetle{
+
+    width:82px;
+
+    height:82px;
+
+    z-index:34;
+
+    filter:
+    drop-shadow(
+    0 0 10px rgba(255,255,255,0.7)
+    );
+}
+
+/* ガス */
+
+.gas-cloud{
+
+    position:fixed;
+
+    width:160px;
+
+    height:160px;
+
+    border-radius:50%;
+
+    background:
+    radial-gradient(
+    circle,
+    rgba(255,255,255,0.85),
+    rgba(255,255,255,0.1)
+    );
+
+    filter:blur(16px);
+
+    z-index:33;
+
+    pointer-events:none;
+
+    animation:
+    gasFade 0.7s ease-out forwards;
+}
+
+/* ミイデラ撃退 */
+
+.defeated{
+
+    animation:
+    vanish 0.55s ease-out forwards;
+}
+
+/* =========================
+   研究ページ用背景
 ========================= */
 
 .dark-theme{
@@ -99,14 +498,10 @@ p{
     color:#f5f8ff;
 }
 
-/* header */
-
 .dark-theme header{
 
     padding:60px 20px;
 }
-
-/* タイトル */
 
 .dark-theme h1{
 
@@ -114,8 +509,6 @@ p{
 
     color:#d8e9ff;
 }
-
-/* ナビ */
 
 .dark-theme nav{
 
@@ -146,8 +539,6 @@ p{
     rgba(255,255,255,0.16);
 }
 
-/* カード */
-
 .dark-theme section{
 
     max-width:900px;
@@ -172,8 +563,6 @@ p{
     0 8px 25px rgba(0,0,0,0.35);
 }
 
-/* 見出し */
-
 .dark-theme h2{
 
     color:#9fd0ff;
@@ -183,16 +572,12 @@ p{
     font-size:32px;
 }
 
-/* 本文 */
-
 .dark-theme p{
 
     line-height:2;
 
     font-size:18px;
 }
-
-/* リスト */
 
 .dark-theme ul{
 
@@ -216,52 +601,54 @@ p{
     border-radius:14px;
 }
 
-/* 学名 */
+/* =========================
+   下説明
+========================= */
 
-.dark-theme strong{
+.dark-theme-section{
 
-    color:#d8ecff;
-}
+    position:relative;
 
-/* トップページカード */
+    z-index:5;
 
-.card{
+    max-width:900px;
+
+    margin:50px auto;
+
+    padding:40px;
 
     background:
-    rgba(20,25,35,0.82);
-
-    color:white;
-
-    text-decoration:none;
-
-    padding:30px;
-
-    border-radius:20px;
-
-    transition:0.3s;
-
-    font-size:22px;
-
-    backdrop-filter:blur(5px);
+    rgba(15,20,30,0.82);
 
     border:
     1px solid rgba(255,255,255,0.08);
 
-    display:block;
+    border-radius:28px;
+
+    backdrop-filter:blur(10px);
+
+    text-align:left;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,0.35);
 }
 
-.card:hover{
+.dark-theme-section h2{
 
-    background:
-    rgba(35,45,65,0.9);
+    color:#9fd0ff;
 
-    transform:
-    translateY(-5px);
+    font-size:34px;
 }
 
-/* footer */
+/* =========================
+   footer
+========================= */
 
 footer{
+
+    position:relative;
+
+    z-index:5;
 
     margin-top:50px;
 
@@ -269,4 +656,198 @@ footer{
 
     color:#d6e4f5;
 }
-```
+
+/* =========================
+   アニメーション
+========================= */
+
+@keyframes wiggle{
+
+    from{
+
+        transform:
+        rotate(-3deg);
+    }
+
+    to{
+
+        transform:
+        rotate(3deg);
+    }
+}
+
+@keyframes gasFade{
+
+    0%{
+
+        opacity:0;
+
+        transform:
+        scale(0.4);
+    }
+
+    40%{
+
+        opacity:1;
+
+        transform:
+        scale(1);
+    }
+
+    100%{
+
+        opacity:0;
+
+        transform:
+        scale(1.5);
+    }
+}
+
+@keyframes vanish{
+
+    to{
+
+        opacity:0;
+
+        transform:
+        scale(0.2)
+        rotate(40deg);
+    }
+}
+
+/* =========================
+   スマホ
+========================= */
+
+@media(max-width:700px){
+
+    h1{
+
+        font-size:40px;
+    }
+
+    p{
+
+        font-size:17px;
+    }
+
+    .field-section{
+
+        margin:40px 10px;
+
+        padding:28px 10px;
+    }
+
+    .field-section h2{
+
+        font-size:30px;
+    }
+
+    .research-dial{
+
+        width:360px;
+
+        height:360px;
+
+        margin:
+        45px 0 45px 5px;
+    }
+
+    .orbit{
+
+        width:90px;
+
+        height:90px;
+
+        font-size:14px;
+    }
+
+    .orbit1{
+
+        top:0;
+
+        left:135px;
+    }
+
+    .orbit2{
+
+        top:65px;
+
+        right:0;
+    }
+
+    .orbit3{
+
+        bottom:65px;
+
+        right:0;
+    }
+
+    .orbit4{
+
+        bottom:0;
+
+        left:135px;
+    }
+
+    .orbit5{
+
+        bottom:65px;
+
+        left:0;
+    }
+
+    .orbit6{
+
+        top:65px;
+
+        left:0;
+    }
+
+    .field-kera{
+
+        width:42px;
+
+        height:42px;
+    }
+
+    .king-kera{
+
+        width:72px;
+
+        height:72px;
+    }
+
+    .field-beetle{
+
+        width:62px;
+
+        height:62px;
+    }
+
+    .gas-cloud{
+
+        width:120px;
+
+        height:120px;
+    }
+
+    #game-status{
+
+        width:70%;
+
+        font-size:12px;
+    }
+
+    #control-panel{
+
+        left:50%;
+
+        right:auto;
+
+        transform:
+        translateX(-50%);
+
+        bottom:75px;
+    }
+}
