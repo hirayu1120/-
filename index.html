@@ -102,8 +102,10 @@ const statusText = document.getElementById("game-status");
 let keras = [];
 let beetles = [];
 let kingBorn = false;
+let nextGroupId = 1;
 
-const KING_THRESHOLD = 5;
+const KING_THRESHOLD = 18;
+const KING_CHANCE = 0.12;
 const LOOP_MS = 120;
 
 function rand(max){
@@ -156,12 +158,8 @@ function updateHpBar(bar,hp){
 }
 
 function faceDirection(obj,dx){
-  if(dx < -1){
-    obj.el.classList.add("face-left");
-  }
-  if(dx > 1){
-    obj.el.classList.remove("face-left");
-  }
+  if(dx < -1) obj.el.classList.add("face-left");
+  if(dx > 1) obj.el.classList.remove("face-left");
 }
 
 function randomPersonality(isKing){
@@ -169,12 +167,50 @@ function randomPersonality(isKing){
 
   const r = Math.random();
 
-  if(r < 0.15) return "suicide";
-  if(r < 0.30) return "guardian";
-  if(r < 0.45) return "coward";
+  if(r < 0.12) return "suicide";
+  if(r < 0.26) return "guardian";
+  if(r < 0.42) return "coward";
   if(r < 0.60) return "social";
-  if(r < 0.75) return "loner";
-  if(r < 0.90) return "fighter";
+  if(r < 0.74) return "loner";
+  if(r < 0.88) return "fighter";
+
+  return "normal";
+}
+
+function decideKeraRole(isKing, personality){
+  if(isKing) return "king";
+
+  if(personality === "fighter" || personality === "suicide"){
+    return Math.random() < 0.7 ? "attacker" : "wall";
+  }
+
+  if(personality === "guardian"){
+    return Math.random() < 0.55 ? "guard" : "aide";
+  }
+
+  if(personality === "coward"){
+    return Math.random() < 0.65 ? "runner" : "solo";
+  }
+
+  if(personality === "social"){
+    const r = Math.random();
+    if(r < 0.35) return "guard";
+    if(r < 0.65) return "aide";
+    return "wall";
+  }
+
+  if(personality === "loner"){
+    return Math.random() < 0.75 ? "solo" : "runner";
+  }
+
+  const r = Math.random();
+
+  if(r < 0.16) return "attacker";
+  if(r < 0.32) return "guard";
+  if(r < 0.46) return "wall";
+  if(r < 0.58) return "aide";
+  if(r < 0.74) return "runner";
+  if(r < 0.88) return "solo";
 
   return "normal";
 }
@@ -183,46 +219,135 @@ function getKingKera(){
   return keras.find(kera => kera.king);
 }
 
-function chooseWanderTarget(kera){
-  kera.targetX = rand(fieldWidth() - kera.size);
-  kera.targetY = soilTop() + rand(fieldHeight() - soilTop() - kera.size);
-  kera.moveTimer = 80 + Math.floor(Math.random() * 160);
+function maybeCreateKing(){
+  if(
+    keras.length >= KING_THRESHOLD &&
+    !kingBorn &&
+    Math.random() < KING_CHANCE
+  ){
+    kingBorn = true;
+    createKera(true);
+  }
 }
 
-function createKera(isKing=false){
+function chooseWanderTarget(kera){
+  const margin = 45;
+  const w = fieldWidth();
+  const h = fieldHeight();
+  const top = soilTop();
+
+  if(Math.random() < kera.wallPreference){
+    const side = Math.floor(Math.random() * 4);
+
+    if(side === 0){
+      kera.targetX = margin;
+      kera.targetY = top + rand(h - top - kera.size);
+    }
+    else if(side === 1){
+      kera.targetX = w - kera.size - margin;
+      kera.targetY = top + rand(h - top - kera.size);
+    }
+    else if(side === 2){
+      kera.targetX = rand(w - kera.size);
+      kera.targetY = top + margin;
+    }
+    else{
+      kera.targetX = rand(w - kera.size);
+      kera.targetY = h - kera.size - margin;
+    }
+  }
+  else{
+    kera.targetX = rand(w - kera.size);
+    kera.targetY = top + rand(h - top - kera.size);
+  }
+
+  kera.moveTimer = 70 + Math.floor(Math.random() * 130);
+}
+
+function findBestGroupForKera(role, solitary){
+  if(solitary || role === "solo") return nextGroupId++;
+
+  const candidates = keras.filter(function(k){
+    return !k.king && k.role === role && k.groupId && k.role !== "solo";
+  });
+
+  if(candidates.length === 0) return nextGroupId++;
+
+  const groups = {};
+
+  candidates.forEach(function(k){
+    if(!groups[k.groupId]) groups[k.groupId] = 0;
+    groups[k.groupId]++;
+  });
+
+  let bestGroup = null;
+  let bestCount = 999;
+
+  Object.keys(groups).forEach(function(id){
+    const count = groups[id];
+
+    if(count < bestCount && count < 8){
+      bestCount = count;
+      bestGroup = Number(id);
+    }
+  });
+
+  return bestGroup || nextGroupId++;
+}
+
+function createKera(isKing=false, groupId=null, baseX=null, baseY=null){
   const unit = document.createElement("div");
 
-  unit.className =
-  isKing
-  ? "insect-unit field-kera king-kera"
-  : "insect-unit field-kera";
+  unit.className = isKing
+    ? "insect-unit field-kera king-kera"
+    : "insect-unit field-kera";
 
   const img = document.createElement("img");
   img.src = isKing ? "kera_king.png" : "kera1.png";
-  img.alt = isKing ? "王様ケラ" : "ケラ";
+  img.alt = isKing ? "オオ様ケラ" : "ケラ";
 
   unit.appendChild(img);
+
+  const personality = randomPersonality(isKing);
+  const role = decideKeraRole(isKing, personality);
+  const solitary = !isKing && (role === "solo" || Math.random() < 0.16);
+  const gx = groupId || findBestGroupForKera(role, solitary);
 
   const kera = {
     type:"kera",
     el:unit,
-    x:rand(fieldWidth() - 80),
-    y:soilTop() + rand(fieldHeight() - soilTop() - 80),
+    x:baseX === null ? rand(fieldWidth() - 80) : baseX + rand(70) - 35,
+    y:baseY === null ? soilTop() + rand(fieldHeight() - soilTop() - 80) : baseY + rand(70) - 35,
     size:isKing ? 95 : 55,
     king:isKing,
-    hp:isKing ? 3 : 1,
+    groupId:gx,
+    role:role,
+    personality:personality,
+    solitary:solitary,
+    loyalty:Math.random(),
+    hp:isKing ? 5 : 1,
     hpBar:null,
     charge:0,
     fear:0,
-    courage:0,
     targetX:0,
     targetY:0,
     moveTimer:0,
-    personality:randomPersonality(isKing)
+    stuckTimer:0,
+    lastX:0,
+    lastY:0,
+    wallPreference:isKing ? 0.75 : 0.5 + Math.random() * 0.35,
+    escapeBias:isKing ? 1.8 : 0.8 + Math.random() * 0.8,
+    groupBias:solitary ? 0.15 : 0.6 + Math.random() * 0.8
   };
 
+  if(kera.role === "wall") kera.groupBias += 0.4;
+  if(kera.role === "guard") kera.groupBias += 0.45;
+  if(kera.role === "aide") kera.groupBias += 0.65;
+  if(kera.role === "runner") kera.escapeBias += 0.45;
+  if(kera.role === "solo") kera.wallPreference += 0.15;
+
   if(isKing){
-    kera.hpBar = makeHpBar(unit,3);
+    kera.hpBar = makeHpBar(unit,5);
     updateHpBar(kera.hpBar,kera.hp);
   }
 
@@ -234,13 +359,8 @@ function createKera(isKing=false){
 
   unit.addEventListener("click", function(event){
     event.stopPropagation();
-
-    createKera(false);
-
-    if(keras.length >= KING_THRESHOLD && !kingBorn){
-      kingBorn = true;
-      createKera(true);
-    }
+    createKera(false, null, kera.x, kera.y);
+    maybeCreateKing();
   });
 
   field.appendChild(unit);
@@ -257,7 +377,7 @@ function createBeetle(){
 
   unit.appendChild(img);
 
-  const maxHp = 25 + Math.floor(Math.random() * 16);
+  const maxHp = 48 + Math.floor(Math.random() * 20);
 
   const beetle = {
     type:"beetle",
@@ -270,7 +390,10 @@ function createBeetle(){
     hpBar:null,
     gasCharge:0,
     biteCharge:0,
-    alive:true
+    alive:true,
+    stuckTimer:0,
+    lastX:0,
+    lastY:0
   };
 
   beetle.hpBar = makeHpBar(unit,maxHp);
@@ -299,8 +422,141 @@ function nearestBeetle(kera){
   return target;
 }
 
+function nearestKera(beetle){
+  if(keras.length === 0) return null;
+
+  let target = keras[0];
+
+  keras.forEach(function(kera){
+    if(distance(kera,beetle) < distance(target,beetle)){
+      target = kera;
+    }
+  });
+
+  return target;
+}
+
 function nearbyKeraCount(obj,range){
   return keras.filter(kera => distance(kera,obj) < range).length;
+}
+
+function sameGroupFriends(kera,range){
+  if(kera.solitary) return [];
+
+  return keras.filter(function(friend){
+    return friend !== kera &&
+      !friend.king &&
+      !friend.solitary &&
+      friend.groupId === kera.groupId &&
+      distance(friend,kera) < range;
+  });
+}
+
+function roleFriends(kera,range){
+  return keras.filter(function(friend){
+    return friend !== kera &&
+      !friend.king &&
+      !friend.solitary &&
+      friend.role === kera.role &&
+      distance(friend,kera) < range;
+  });
+}
+
+function groupCenter(kera){
+  const friends = keras.filter(function(friend){
+    return !friend.king &&
+      !friend.solitary &&
+      friend.groupId === kera.groupId;
+  });
+
+  if(friends.length === 0){
+    return {x:kera.x, y:kera.y};
+  }
+
+  return {
+    x:friends.reduce((sum,k) => sum + k.x,0) / friends.length,
+    y:friends.reduce((sum,k) => sum + k.y,0) / friends.length
+  };
+}
+
+function separate(obj,list,minDist=45,force=0.06){
+  let pushX = 0;
+  let pushY = 0;
+
+  list.forEach(function(other){
+    if(obj === other) return;
+
+    const d = distance(obj,other);
+
+    if(d > 0 && d < minDist){
+      const power = (minDist - d) / minDist;
+      pushX += (obj.x - other.x) / d * power;
+      pushY += (obj.y - other.y) / d * power;
+    }
+  });
+
+  obj.x += pushX * force * 20;
+  obj.y += pushY * force * 20;
+}
+
+function wallWalk(obj,speed=1.2){
+  const margin = 65;
+  const w = fieldWidth();
+  const h = fieldHeight();
+  const top = soilTop();
+
+  const nearLeft = obj.x < margin;
+  const nearRight = obj.x > w - obj.size - margin;
+  const nearTop = obj.y < top + margin;
+  const nearBottom = obj.y > h - obj.size - margin;
+
+  if(nearLeft){
+    obj.x += 0.4;
+    obj.y += speed * (Math.random() < 0.5 ? 1 : -1);
+    return true;
+  }
+
+  if(nearRight){
+    obj.x -= 0.4;
+    obj.y += speed * (Math.random() < 0.5 ? 1 : -1);
+    return true;
+  }
+
+  if(nearTop){
+    obj.y += 0.4;
+    obj.x += speed * (Math.random() < 0.5 ? 1 : -1);
+    return true;
+  }
+
+  if(nearBottom){
+    obj.y -= 0.4;
+    obj.x += speed * (Math.random() < 0.5 ? 1 : -1);
+    return true;
+  }
+
+  return false;
+}
+
+function preventStuck(obj){
+  const moved =
+    Math.abs(obj.x - obj.lastX) +
+    Math.abs(obj.y - obj.lastY);
+
+  if(moved < 0.8){
+    obj.stuckTimer++;
+  }
+  else{
+    obj.stuckTimer = 0;
+  }
+
+  if(obj.stuckTimer > 18){
+    obj.x += rand(90) - 45;
+    obj.y += rand(90) - 45;
+    obj.stuckTimer = 0;
+  }
+
+  obj.lastX = obj.x;
+  obj.lastY = obj.y;
 }
 
 function damageKera(kera){
@@ -313,13 +569,18 @@ function damageKera(kera){
     kera.el.classList.remove("hit-effect");
   },220);
 
-  kera.fear += 80;
+  kera.fear += 100;
 
   if(kera.king){
     keras.forEach(function(friend){
       if(!friend.king){
-        friend.charge += 35;
-        friend.fear = Math.max(0, friend.fear - 40);
+        if(friend.role === "guard" || friend.role === "aide" || friend.role === "wall"){
+          friend.charge += 35;
+          friend.fear = Math.max(0, friend.fear - 25);
+        }
+        else{
+          friend.fear += 20;
+        }
       }
     });
   }
@@ -354,11 +615,29 @@ function emitGas(beetle){
 }
 
 function biteAttack(beetle){
-  const target = keras.find(kera => distance(kera,beetle) < 65);
-  if(target) damageKera(target);
+  beetle.el.classList.add("biting");
+
+  const effect = document.createElement("div");
+  effect.className = "bite-effect";
+  effect.style.left = beetle.x + 35 + "px";
+  effect.style.top = beetle.y + 22 + "px";
+  field.appendChild(effect);
+
+  setTimeout(function(){
+    beetle.el.classList.remove("biting");
+    effect.remove();
+  },260);
+
+  const target = keras.find(kera => distance(kera,beetle) < 72);
+
+  if(target){
+    damageKera(target);
+  }
 }
 
 function punchAttack(kera,target){
+  if(kera.king) return;
+
   kera.el.classList.add("punching");
   target.el.classList.add("hit-effect");
 
@@ -367,11 +646,11 @@ function punchAttack(kera,target){
     target.el.classList.remove("hit-effect");
   },260);
 
-  target.hp -= kera.king ? 5 : 1;
+  target.hp -= 1;
   updateHpBar(target.hpBar,target.hp);
 
   kera.charge = 0;
-  kera.fear += 20;
+  kera.fear += 28;
 }
 
 function moveToward(obj,tx,ty,speed){
@@ -406,41 +685,153 @@ function moveKeras(){
     let courageBonus = 0;
 
     const friends = nearbyKeraCount(kera,180);
+    const sameFriends = sameGroupFriends(kera,150);
+    const sameRole = roleFriends(kera,180);
+    const center = groupCenter(kera);
 
     if(kera.personality === "suicide"){
-      courageBonus += 80;
-      speedRate = 1.25;
-      kera.charge += 1.5;
+      courageBonus += 55;
+      speedRate = 1.2;
+      kera.charge += 1.2;
     }
 
     if(kera.personality === "guardian"){
-      courageBonus += 35;
+      courageBonus += 25;
     }
 
     if(kera.personality === "coward"){
-      courageBonus -= 80;
-      speedRate = 1.25;
-      kera.fear += 0.5;
+      courageBonus -= 95;
+      speedRate = 1.28;
+      kera.fear += 0.8;
     }
 
     if(kera.personality === "social"){
-      courageBonus += friends * 8;
-      speedRate = 0.9;
+      courageBonus += sameFriends.length * 10;
+      speedRate = 0.95;
     }
 
     if(kera.personality === "loner"){
-      courageBonus -= friends * 5;
-      speedRate = 0.8;
+      courageBonus -= friends * 7;
+      speedRate = 0.9;
     }
 
     if(kera.personality === "fighter"){
-      courageBonus += 60;
-      speedRate = 1.15;
-      kera.charge += 1;
+      courageBonus += 45;
+      speedRate = 1.12;
+      kera.charge += 0.8;
     }
 
-    kera.charge += 1;
-    kera.fear = Math.max(0, kera.fear - 1);
+    if(kera.role === "solo"){
+      courageBonus -= 35;
+      speedRate *= 1.05;
+    }
+
+    if(kera.role === "attacker"){
+      courageBonus += 65;
+      speedRate *= 1.15;
+      kera.charge += 1.2;
+    }
+
+    if(kera.role === "guard"){
+      courageBonus += 35;
+    }
+
+    if(kera.role === "wall"){
+      courageBonus += 18;
+      speedRate *= 0.9;
+    }
+
+    if(kera.role === "aide"){
+      courageBonus += 15;
+    }
+
+    if(kera.role === "runner"){
+      courageBonus -= 70;
+      speedRate *= 1.25;
+    }
+
+    kera.charge += 0.8;
+    kera.fear = Math.max(0, kera.fear - 1.1);
+
+    separate(kera, keras, kera.king ? 70 : 48, 0.08);
+
+    if(kera.king){
+      if(target){
+        const d = distance(kera,target);
+
+        if(d < 280){
+          moveAway(kera,target,3.0 * speedRate);
+        }
+        else if(Math.random() < 0.8){
+          wallWalk(kera,1.8);
+        }
+        else{
+          kera.moveTimer--;
+
+          if(kera.moveTimer <= 0){
+            chooseWanderTarget(kera);
+          }
+
+          moveToward(kera,kera.targetX,kera.targetY,1.1);
+        }
+      }
+      else{
+        if(Math.random() < 0.75){
+          wallWalk(kera,1.4);
+        }
+        else{
+          moveToward(kera,kera.targetX,kera.targetY,0.9);
+        }
+      }
+
+      limit(kera);
+      preventStuck(kera);
+
+      kera.el.style.left = kera.x + "px";
+      kera.el.style.top = kera.y + "px";
+      return;
+    }
+
+    if(king && !kera.solitary && !kera.king){
+      const distToKing = distance(kera, king);
+      const distKingToEnemy = target ? distance(king, target) : 999;
+
+      if(kera.role === "aide" && distToKing > 80){
+        moveToward(kera, king.x + rand(70) - 35, king.y + rand(70) - 35, 1.7 * speedRate);
+        limit(kera);
+        preventStuck(kera);
+        kera.el.style.left = kera.x + "px";
+        kera.el.style.top = kera.y + "px";
+        return;
+      }
+
+      if(kera.role === "guard" && target && distKingToEnemy < 280){
+        const blockX = (king.x + target.x) / 2;
+        const blockY = (king.y + target.y) / 2;
+        moveToward(kera, blockX, blockY, 2.0 * speedRate);
+        limit(kera);
+        preventStuck(kera);
+        kera.el.style.left = kera.x + "px";
+        kera.el.style.top = kera.y + "px";
+        return;
+      }
+
+      if(kera.role === "wall" && target && distKingToEnemy < 320){
+        const dx = king.x - target.x;
+        const dy = king.y - target.y;
+        const d = Math.sqrt(dx*dx + dy*dy) || 1;
+
+        const wallX = king.x + dx / d * 95 + rand(80) - 40;
+        const wallY = king.y + dy / d * 95 + rand(80) - 40;
+
+        moveToward(kera, wallX, wallY, 1.75 * speedRate);
+        limit(kera);
+        preventStuck(kera);
+        kera.el.style.left = kera.x + "px";
+        kera.el.style.top = kera.y + "px";
+        return;
+      }
+    }
 
     if(!target){
       kera.moveTimer--;
@@ -449,63 +840,81 @@ function moveKeras(){
         chooseWanderTarget(kera);
       }
 
-      moveToward(kera,kera.targetX,kera.targetY,1.0 * speedRate);
+      if(Math.random() < kera.wallPreference){
+        wallWalk(kera,1.3 * speedRate);
+      }
+      else{
+        moveToward(kera,kera.targetX,kera.targetY,1.0 * speedRate);
+      }
+
+      if(!kera.solitary && sameFriends.length < 4 && kera.role !== "solo"){
+        moveToward(kera,center.x,center.y,0.5 * kera.groupBias);
+      }
     }
 
     else{
       const d = distance(kera,target);
       const attackGroup = nearbyKeraCount(target,190);
 
-      const kingDanger =
-      king &&
-      !kera.king &&
-      distance(king,target) < 200;
-
       let courage =
-      attackGroup * 14 +
-      (kera.king ? 50 : 0) +
-      Math.min(kera.charge,40) +
-      courageBonus -
-      kera.fear;
+        sameFriends.length * 14 +
+        sameRole.length * 7 +
+        attackGroup * 4 +
+        Math.min(kera.charge,35) +
+        courageBonus -
+        kera.fear;
 
-      if(
-        king &&
-        !kera.king &&
-        kera.personality === "guardian" &&
-        distance(kera,king) > 120
-      ){
-        moveToward(kera,king.x,king.y,1.8 * speedRate);
-      }
-
-      else if(d < 120 && courage < 55){
-        moveAway(kera,target,2.4 * speedRate);
+      if(d < 150 && courage < 70){
+        moveAway(kera,target,2.9 * speedRate * kera.escapeBias);
+        wallWalk(kera,0.8);
       }
 
       else if(
-        (
-          attackGroup >= 5 ||
-          kingDanger ||
-          kera.personality === "suicide" ||
-          kera.personality === "fighter"
-        )
-        &&
-        courage >= 45
+        kera.role === "attacker" &&
+        sameRole.length >= 2 &&
+        courage >= 55
       ){
-        moveToward(kera,target.x,target.y,2.6 * speedRate);
+        moveToward(kera,target.x,target.y,2.4 * speedRate);
 
-        if(d < 75 && kera.charge > 10){
+        if(d < 75 && kera.charge > 12){
           punchAttack(kera,target);
         }
       }
 
-      else if(kera.personality === "social" && friends < 4){
-        const cx = keras.reduce((sum,k) => sum + k.x,0) / keras.length;
-        const cy = keras.reduce((sum,k) => sum + k.y,0) / keras.length;
-        moveToward(kera,cx,cy,1.2 * speedRate);
+      else if(
+        !kera.solitary &&
+        sameFriends.length >= 4 &&
+        attackGroup >= 5 &&
+        courage >= 55
+      ){
+        moveToward(kera,target.x,target.y,2.2 * speedRate);
+
+        if(d < 75 && kera.charge > 12){
+          punchAttack(kera,target);
+        }
       }
 
-      else if(d < 210){
-        moveAway(kera,target,1.1 * speedRate);
+      else if(kera.role === "solo"){
+        if(d < 230){
+          moveAway(kera,target,2.1 * speedRate);
+        }
+        else{
+          wallWalk(kera,1.4);
+        }
+      }
+
+      else if(kera.role === "runner" && d < 260){
+        moveAway(kera,target,2.4 * speedRate);
+        wallWalk(kera,1.1);
+      }
+
+      else if(kera.personality === "social" && sameFriends.length < 5){
+        moveToward(kera,center.x,center.y,1.2 * speedRate);
+      }
+
+      else if(d < 240){
+        moveAway(kera,target,1.6 * speedRate * kera.escapeBias);
+        wallWalk(kera,0.9);
       }
 
       else{
@@ -515,11 +924,17 @@ function moveKeras(){
           chooseWanderTarget(kera);
         }
 
-        moveToward(kera,kera.targetX,kera.targetY,1.0 * speedRate);
+        if(Math.random() < kera.wallPreference){
+          wallWalk(kera,1.2 * speedRate);
+        }
+        else{
+          moveToward(kera,kera.targetX,kera.targetY,1.0 * speedRate);
+        }
       }
     }
 
     limit(kera);
+    preventStuck(kera);
 
     kera.el.style.left = kera.x + "px";
     kera.el.style.top = kera.y + "px";
@@ -536,6 +951,22 @@ function removeBeetle(beetle){
   },500);
 }
 
+function beetleGroupCenter(beetle){
+  const allies = beetles.filter(function(b){
+    return b !== beetle && b.alive && distance(b,beetle) < 220;
+  });
+
+  if(allies.length === 0){
+    return {x:beetle.x, y:beetle.y, count:0};
+  }
+
+  return {
+    x:allies.reduce((sum,b) => sum + b.x,0) / allies.length,
+    y:allies.reduce((sum,b) => sum + b.y,0) / allies.length,
+    count:allies.length
+  };
+}
+
 function moveBeetles(){
   beetles.slice().forEach(function(beetle){
 
@@ -548,25 +979,34 @@ function moveBeetles(){
 
     if(keras.length === 0) return;
 
-    let target = keras[0];
+    const target = nearestKera(beetle);
+    if(!target) return;
 
-    keras.forEach(function(kera){
-      if(distance(kera,beetle) < distance(target,beetle)){
-        target = kera;
-      }
-    });
+    separate(beetle, beetles, 70, 0.07);
 
     const swarm = keras.filter(kera => distance(kera,beetle) < 180).length;
+    const allies = beetleGroupCenter(beetle);
+    const weak = beetle.hp < beetle.maxHp * 0.38;
 
-    if(swarm >= 7){
-      const cx = keras.reduce((sum,k) => sum + k.x,0) / keras.length;
-      const cy = keras.reduce((sum,k) => sum + k.y,0) / keras.length;
+    if(swarm >= 7 || weak){
+      const nearKeras = keras.filter(kera => distance(kera,beetle) < 220);
 
-      moveAway(beetle,{x:cx,y:cy},1.8);
+      const cx = nearKeras.reduce((sum,k) => sum + k.x,0) / Math.max(1,nearKeras.length);
+      const cy = nearKeras.reduce((sum,k) => sum + k.y,0) / Math.max(1,nearKeras.length);
+
+      moveAway(beetle,{x:cx,y:cy},2.1);
+    }
+
+    else if(allies.count >= 1){
+      moveToward(beetle,target.x,target.y,1.9);
+    }
+
+    else if(distance(beetle,target) < 140){
+      moveToward(beetle,target.x,target.y,1.55);
     }
 
     else{
-      moveToward(beetle,target.x,target.y,1.4);
+      moveToward(beetle,target.x,target.y,1.35);
     }
 
     beetle.gasCharge += LOOP_MS;
@@ -577,12 +1017,13 @@ function moveBeetles(){
       beetle.gasCharge = 0;
     }
 
-    if(beetle.biteCharge >= 10000){
+    if(beetle.biteCharge >= 6500){
       biteAttack(beetle);
       beetle.biteCharge = 0;
     }
 
     limit(beetle);
+    preventStuck(beetle);
 
     beetle.el.style.left = beetle.x + "px";
     beetle.el.style.top = beetle.y + "px";
@@ -590,14 +1031,30 @@ function moveBeetles(){
 }
 
 function updateStatus(){
+  const attackers = keras.filter(k => k.role === "attacker").length;
+  const guards = keras.filter(k => k.role === "guard").length;
+  const walls = keras.filter(k => k.role === "wall").length;
+  const aides = keras.filter(k => k.role === "aide").length;
+  const solos = keras.filter(k => k.role === "solo" || k.solitary).length;
+
   if(beetles.length === 0){
     statusText.textContent = "ケラの群れが勝利しました。";
   }
   else if(kingBorn){
-    statusText.textContent = "王様ケラ出現。群れが防衛・集合・撤退を行っています。";
+    statusText.textContent =
+      "オオ様ケラ出現。側近:" + aides +
+      " 守備:" + guards +
+      " 壁役:" + walls +
+      " 攻撃:" + attackers +
+      " 単独:" + solos;
   }
   else{
-    statusText.textContent = "ケラをタップすると増えます。個体ごとに性格があります。";
+    statusText.textContent =
+      "クリック1回でケラ1匹追加。攻撃:" + attackers +
+      " 守備:" + guards +
+      " 壁役:" + walls +
+      " 側近:" + aides +
+      " 単独:" + solos;
   }
 }
 
@@ -612,10 +1069,12 @@ document.getElementById("insecticide-button").addEventListener("click", function
   keras.forEach(k => k.el.remove());
   beetles.forEach(b => b.el.remove());
   document.querySelectorAll(".gas-cloud").forEach(g => g.remove());
+  document.querySelectorAll(".bite-effect").forEach(b => b.remove());
 
   keras = [];
   beetles = [];
   kingBorn = false;
+  nextGroupId = 1;
 
   updateStatus();
 });
@@ -623,11 +1082,7 @@ document.getElementById("insecticide-button").addEventListener("click", function
 field.addEventListener("click", function(event){
   if(event.target === field){
     createKera(false);
-
-    if(keras.length >= KING_THRESHOLD && !kingBorn){
-      kingBorn = true;
-      createKera(true);
-    }
+    maybeCreateKing();
   }
 });
 
@@ -646,6 +1101,3 @@ setInterval(function(){
 
 });
 </script>
-
-</body>
-</html>
